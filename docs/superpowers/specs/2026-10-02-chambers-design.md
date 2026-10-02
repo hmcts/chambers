@@ -92,10 +92,14 @@ terminal multiplexer. The comparable tool needs tmux, herdr, zellij, cmux or
 orca because it spawns visible interactive panes a human can type into. That
 affordance is real and this design gives it up.
 
-**Assumption, stated because it was not confirmed:** losing the watchable pane
-is acceptable. If it is not, a session-backend section is needed and the
-dependency position below changes. This is the single assumption most likely to
-be wrong, and it is cheap to correct now and expensive later.
+**The trade-off was accepted on 2026-10-02**, as part of approving the install
+approach this follows from — the pane was named as its cost at the time. It is
+recorded here rather than left implicit because it is the one thing a later
+reader is most likely to think was overlooked.
+
+Reopening it is not free: a session backend brings back a dependency the
+install position exists to avoid, so it wants a reason rather than a
+preference.
 
 ## Supervision
 
@@ -119,12 +123,37 @@ in the same change. A comparable tool installs two reboot-surviving launch
 agents and nothing in its repository removes either; the tool it recommends for
 contributions installs a third.
 
-## Dependencies
+## Install
+
+Two separate questions, and they have different answers.
+
+### How Chambers arrives
+
+It is cloned. There is no package, no binary and no install step, which is the
+one part of the comparable tool's model to keep unchanged: the cloned
+repository is the thing.
+
+So nothing needs verifying at install time, because nothing is fetched. **The
+risk is not the clone — it is that launching an agent inside the directory
+executes whatever hooks the repository registers**, before the first prompt.
+That is a disclosure problem rather than an install one, and it has a design
+consequence rather than a mitigation:
+
+**Chambers ships few enough hooks that reading them before the first launch is
+realistic.** A reader who cannot audit the startup path in one sitting will not
+audit it at all, and a tool that cannot be audited cannot be adopted here. Any
+change that adds a hook argues for it against that budget.
+
+### What it needs to work
 
 **`git` and `gh`. Nothing else.**
 
-This is the clearest departure. Worktrees come from `git worktree`, which is
-built in. Dispatch comes from the harness. Neither needs a package.
+This is the clearest departure, and it comes from two substitutions rather than
+from restraint. Worktrees come from `git worktree`, which is built in, instead
+of a worktree-leasing tool. Dispatch comes from the harness's own subagent
+mechanism instead of a terminal multiplexer. Neither substitution needs a
+package, and between them they remove every component the comparable tool
+installs.
 
 Should an external tool become genuinely necessary, the rule is the one the
 comparable tool already follows in its best code and bypasses in practice:
@@ -180,8 +209,8 @@ tests are of two kinds:
 
 ## Open questions
 
-1. **The watchable pane.** Stated as an assumption above. Needs a decision
-   before implementation.
+1. ~~**The watchable pane.**~~ Settled 2026-10-02: the trade is accepted and
+   there is no session backend. See "Dispatch and isolation".
 2. **Which harnesses.** Supporting one well beats seven badly; the choice
    determines what prompting mode means in practice.
 3. **How a matter is registered.** A committed list is the obvious shape, but
