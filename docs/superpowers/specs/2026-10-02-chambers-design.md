@@ -11,6 +11,17 @@ There is no application. Chambers is a cloned repository of instructions,
 skills and helper scripts, and launching a coding agent inside it is what turns
 that agent into a supervising one.
 
+**Who it is for.** One person accountable for a change to a digital service who
+does not have a full team to make it. What they are short of is disciplines
+rather than hands: the change needs the journeys it touches identified, the
+standards checked, the code written and the work reviewed, and there is one of
+them. Chambers supplies the roles that are missing on one service — not more
+parallel coders across many repositories.
+
+That is the whole audience, and it is deliberately narrow. A tool that also
+serves a full team with every discipline staffed would be answering a different
+shortage and would be designed differently.
+
 **It owns one thing: the layer between an instruction and supervised,
 evidence-backed work on a matter.**
 
@@ -64,11 +75,18 @@ the repository couples to every service and grows until nobody can read it.
 
 ## What a capability is
 
-A capability is a role, not a person and not a model. It is three files:
+A capability is a role, not a person and not a model. It is four things:
 
 - a **brief template** — what this capability is given and what it returns;
 - a **check** — how its output is recognised as finished rather than abandoned;
-- a **boundary** — the paths it may read and write.
+- a **boundary** — the paths it may read and write;
+- a **declared model and effort**, which the brief may override.
+
+The last one follows from the audience. If capabilities were parallel coders
+they could share a setting, but they are different disciplines: reviewing a
+change and writing one are not the same kind of work and do not want the same
+amount of thinking. Declaring it per capability also makes the cost legible —
+the expensive roles are named rather than discovered on a bill.
 
 Capabilities are data. Adding one is adding a directory, not changing the
 dispatcher.
