@@ -37,12 +37,6 @@ without the reasoning that produced it. If that separation is ever relaxed for
 convenience, the component stops meaning anything and should be removed rather
 than weakened.
 
-That constraint is not theoretical. A sibling repository's assessment skill has
-a verifier pass whose entire value is that it receives the findings and not the
-reasoning behind them. The session that wrote it then verified its own mutation
-mapping locally, pronounced it clean, and was contradicted by continuous
-integration twice in two days.
-
 **Matters are outside.** Chambers is read-only over a matter except through
 narrow operations a human has approved. If services live inside the repository,
 the repository couples to every service and grows until nobody can read it.
