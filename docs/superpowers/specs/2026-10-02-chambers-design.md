@@ -18,9 +18,7 @@ standards checked, the code written and the work reviewed, and there is one of
 them. Chambers supplies the roles that are missing on one service — not more
 parallel coders across many repositories.
 
-That is the whole audience, and it is deliberately narrow. A tool that also
-serves a full team with every discipline staffed would be answering a different
-shortage and would be designed differently.
+A team with every discipline staffed is not the audience.
 
 **It owns one thing: the layer between an instruction and supervised,
 evidence-backed work on a matter.**
@@ -82,11 +80,10 @@ A capability is a role, not a person and not a model. It is four things:
 - a **boundary** — the paths it may read and write;
 - a **declared model and effort**, which the brief may override.
 
-The last one follows from the audience. If capabilities were parallel coders
-they could share a setting, but they are different disciplines: reviewing a
-change and writing one are not the same kind of work and do not want the same
-amount of thinking. Declaring it per capability also makes the cost legible —
-the expensive roles are named rather than discovered on a bill.
+Model and effort are per capability because reviewing a change and writing one
+are different kinds of work and do not want the same amount of thinking. It also
+keeps the cost legible: the expensive roles are named rather than found on a
+bill.
 
 Capabilities are data. Adding one is adding a directory, not changing the
 dispatcher.
@@ -149,11 +146,9 @@ worker that goes wrong has damaged a disposable directory.
 terminal multiplexer, so there is no pane to watch a worker in or type into
 mid-task.
 
-**That trade was accepted on 2026-10-02**, as part of approving the install
-position it follows from. It is written down rather than left implicit because
-it is the decision a later reader is most likely to think was overlooked.
-Reopening it is not free: a session backend reintroduces a dependency the
-install position exists to avoid, so it wants a reason rather than a preference.
+That is a deliberate trade, not an omission. A session backend reintroduces a
+dependency the install position exists to avoid, so reopening it needs a reason
+rather than a preference.
 
 ## Supervision
 
