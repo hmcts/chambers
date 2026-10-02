@@ -7,12 +7,9 @@ Status: draft for review. Written 2026-10-02.
 You brief one agent. It allocates the work to a set of capabilities, supervises
 them, and brings you the decisions that are yours to make.
 
-It is an agent distro in the sense a comparable tool
-([firstmate](https://github.com/kunchenguid/firstmate)) uses the word: a cloned
-repository of instructions, skills and helper scripts that turns a general
-coding agent into a supervising one. The concept is theirs. What is different
-here is the posture, and the posture is the reason this exists separately
-rather than as a fork.
+There is no application. Chambers is a cloned repository of instructions,
+skills and helper scripts, and launching a coding agent inside it is what turns
+that agent into a supervising one.
 
 **It owns one thing: the layer between an instruction and supervised,
 evidence-backed work on a matter.**
@@ -29,36 +26,34 @@ Four parts, and the separation between them is the design.
 | **Matters** | the services and repositories Chambers is instructed on, owned elsewhere |
 
 A barristers' chambers is a set of independent specialists who share
-infrastructure and a clerk that allocates work. That is the structure being
-borrowed, and it carries two things a ship's crew does not.
+infrastructure and a clerk that allocates work. Two things follow from
+borrowing that structure, and both are load-bearing.
 
-**The reviewer is not a member.** A judge is not in chambers, and the
-independence is the point: the people who produced the work do not rule on it.
-A comparable tool makes its supervisor the captain — top of the chain and
-inside it — so every rule it has is a prompt asking the agent nicely. Here the
-reviewing component runs with its own state and receives the work product
-without the reasoning that produced it.
+**The reviewer is not a member.** An agent that grades its own work grades
+generously, and no instruction fixes that, because the instruction is read by
+the same agent. The only arrangement under which reviewing means anything is
+structural: the Bench runs with its own state and is given the work product
+without the reasoning that produced it. If that separation is ever relaxed for
+convenience, the component stops meaning anything and should be removed rather
+than weakened.
 
-That constraint is not theoretical. The assessment skill in a sibling
-repository has a verifier pass whose whole value is that it receives the
-findings and not the reasoning behind them, and it exists because an agent
-grading its own work grades generously. The same session that wrote it then
-verified its own mutation mapping locally, declared it clean, and was
-contradicted by CI twice.
+That constraint is not theoretical. A sibling repository's assessment skill has
+a verifier pass whose entire value is that it receives the findings and not the
+reasoning behind them. The session that wrote it then verified its own mutation
+mapping locally, pronounced it clean, and was contradicted by continuous
+integration twice in two days.
 
 **Matters are outside.** Chambers is read-only over a matter except through
-narrow operations a human has approved. This is taken directly from the
-comparable tool's first hard rule, and it is what keeps such a tool small: if
-services live inside the repository, the repository couples to every service.
+narrow operations a human has approved. If services live inside the repository,
+the repository couples to every service and grows until nobody can read it.
 
 ## What it will never be
 
 - **A digital service, or part of one.** Nothing it produces runs in front of a
   citizen. It proposes changes that a service team reviews, tests and deploys
   through their own pipeline.
-- **The reviewer of its own work.** The Bench has separate state. If that
-  separation is ever relaxed for convenience, the component stops meaning
-  anything and should be removed rather than weakened.
+- **The reviewer of its own work.** See above; this is the one constraint that
+  cannot be traded.
 - **The authority.** Cost, disclosure, release and anything irreversible stay
   with a person. It escalates; it does not decide.
 - **A replacement for a team.** It supplies capabilities. The accountable
@@ -81,37 +76,67 @@ Capabilities are data. Adding one is adding a directory, not changing the
 dispatcher. The first set is deliberately small: implement, review, investigate.
 Anything else waits for a second user.
 
+## The command surface
+
+**You type English.** "Look at the probate service and fix the flaky address
+test" is the interface, and the measure of the design is how rarely you need
+anything else. A command the operator has to learn is a failure of the brief.
+
+Underneath, the supervising agent needs a small amount of machinery it can call
+and whose output it can trust. The surface is deliberately short, and each entry
+exists for a reason that survives being asked twice:
+
+| Command | Why it cannot be prose |
+|---|---|
+| register and list **matters** | the set of repositories Chambers may touch is a security boundary, so it is a committed file a human edits, not something an agent infers |
+| make and remove a **worktree** for a task | wrapping `git worktree` once puts the naming, the cleanup and the refusal to work outside a matter in one place |
+| write and read a task's **status** | supervision reads fact off disk rather than a log of intent, so the format has exactly one writer |
+
+That is the whole expected surface. There is no command to dispatch a worker,
+because the harness does that; none to attach to a session, because there are no
+panes; and none to install anything, because nothing is installed.
+
+**The test for adding one:** a command exists because the agent cannot do the
+thing reliably in prose, not because it is tidier as a script. A command surface
+grows by one reasonable step at a time until nobody can hold it, and the only
+defence is making each addition argue for itself.
+
+**What a human may want beyond English**, and the only two worth anticipating: a
+way to see what is in flight without asking, and a way to stop everything. Both
+are read-only or destructive rather than productive, which is why they are
+exceptions to the first paragraph rather than contradictions of it.
+
 ## Dispatch and isolation
 
 Each task runs in its own `git worktree`, created from the matter's clone and
 removed on completion. Parallel work on one repository cannot collide, and a
 worker that goes wrong has damaged a disposable directory.
 
-**Dispatch goes through the harness's own subagent mechanism**, not through a
-terminal multiplexer. The comparable tool needs tmux, herdr, zellij, cmux or
-orca because it spawns visible interactive panes a human can type into. That
-affordance is real and this design gives it up.
+**Dispatch goes through the harness's own subagent mechanism.** There is no
+terminal multiplexer, so there is no pane to watch a worker in or type into
+mid-task.
 
-**The trade-off was accepted on 2026-10-02**, as part of approving the install
-approach this follows from — the pane was named as its cost at the time. It is
-recorded here rather than left implicit because it is the one thing a later
-reader is most likely to think was overlooked.
-
-Reopening it is not free: a session backend brings back a dependency the
-install position exists to avoid, so it wants a reason rather than a
-preference.
+**That trade was accepted on 2026-10-02**, as part of approving the install
+position it follows from. It is written down rather than left implicit because
+it is the decision a later reader is most likely to think was overlooked.
+Reopening it is not free: a session backend reintroduces a dependency the
+install position exists to avoid, so it wants a reason rather than a preference.
 
 ## Supervision
 
 A worker is finished, working, or stuck, and only the third needs a human.
+
 Supervision reads the artefacts on disk rather than a dispatch log, because a
 log records intent and the disk records fact.
 
-Worth taking from the comparable tool, which learned them expensively: an agent
-that batches its writes loses everything when it dies, so a worker writes each
-result immediately; a concurrency ceiling that rejects rather than queues means
-a task can be recorded as dispatched and never launched, so "no output" has two
-causes and only one needs a human.
+Two properties of fan-out that are invisible from the code and expensive to
+rediscover:
+
+- **A worker writes each result immediately.** One that accumulates and writes
+  at the end loses everything it produced when it dies.
+- **"No output" has two causes** — a worker still working, and a worker that was
+  never launched because a concurrency ceiling rejected it rather than queuing
+  it. Only the second needs a human, and plan-ordered dispatch hides it.
 
 ## State
 
@@ -119,9 +144,7 @@ All state is files under the Chambers clone, gitignored. No database, no daemon,
 no background service that survives a reboot. A restart reconciles from disk.
 
 If a durable background process is ever needed, it ships with an uninstall path
-in the same change. A comparable tool installs two reboot-surviving launch
-agents and nothing in its repository removes either; the tool it recommends for
-contributions installs a third.
+in the same change, and the uninstall is tested.
 
 ## Install
 
@@ -129,15 +152,13 @@ Two separate questions, and they have different answers.
 
 ### How Chambers arrives
 
-It is cloned. There is no package, no binary and no install step, which is the
-one part of the comparable tool's model to keep unchanged: the cloned
-repository is the thing.
+It is cloned. There is no package, no binary and no install step, so nothing is
+fetched and nothing needs verifying at install time.
 
-So nothing needs verifying at install time, because nothing is fetched. **The
-risk is not the clone — it is that launching an agent inside the directory
-executes whatever hooks the repository registers**, before the first prompt.
-That is a disclosure problem rather than an install one, and it has a design
-consequence rather than a mitigation:
+What that leaves is the real exposure, and it is not the clone. **Launching an
+agent inside the directory executes whatever hooks the repository registers,
+before the first prompt.** That is a disclosure problem rather than an install
+one, and it has a design consequence rather than a mitigation:
 
 **Chambers ships few enough hooks that reading them before the first launch is
 realistic.** A reader who cannot audit the startup path in one sitting will not
@@ -148,19 +169,13 @@ change that adds a hook argues for it against that budget.
 
 **`git` and `gh`. Nothing else.**
 
-This is the clearest departure, and it comes from two substitutions rather than
-from restraint. Worktrees come from `git worktree`, which is built in, instead
-of a worktree-leasing tool. Dispatch comes from the harness's own subagent
-mechanism instead of a terminal multiplexer. Neither substitution needs a
-package, and between them they remove every component the comparable tool
-installs.
+Two substitutions get it there. Worktrees come from `git worktree`, which is
+built in. Dispatch comes from the harness's own subagent mechanism. Neither
+needs a package.
 
-Should an external tool become genuinely necessary, the rule is the one the
-comparable tool already follows in its best code and bypasses in practice:
-pinned version, SHA-256 verified before use, fails closed when no hashing tool
-is present, installs to a caller-supplied directory, never `sudo`. Its
-installer scripts do exactly this; the tools a real user installs go through an
-unpinned `curl … | sh` instead.
+Should an external tool become genuinely necessary: pinned version, SHA-256
+verified before use, fails closed when no hashing tool is present, installs to a
+caller-supplied directory, never `sudo`.
 
 **Never:** an unpinned `curl … | sh`, a global package install without a pinned
 version, or a dependency whose source cannot be read.
@@ -170,35 +185,29 @@ version, or a dependency whose source cannot be read.
 Workers run in their harness's **prompting mode**. A harness with no such mode
 is not supported rather than worked around.
 
-The comparable tool defaults every worker to permissions disabled. One harness
-reads a config file that can select a prompting mode; for the rest the bypass
-flag is a string literal in the launch template with nothing that changes it.
-Its own comments are straightforward about why: auto-approval is what an
-unattended crewmate needs. Giving that up costs unattended throughput, and the
-cost is the point.
-
-A worker parked waiting for a decision is the system working, not a fault.
-Supervision must report it as such.
+This costs unattended throughput, and the cost is the point. **A worker parked
+waiting for a decision is the system working, not a fault**, and supervision
+reports it as such rather than treating it as a stall to clear.
 
 ## Attribution
 
-Commits keep their AI co-author trailers. The comparable tool strips them by
-default through a commit-msg hook, so agent-written code lands looking
-human-authored. For an organisation that has to answer how a change was
-produced, provenance is a requirement rather than a preference.
+Commits keep their AI co-author trailers. For an organisation that has to answer
+how a change was produced, provenance is a requirement rather than a preference,
+and code that lands looking human-authored cannot answer it.
 
 ## No inbound instruction channel
 
-No relay, no bridge from a public account, nothing that lets text from outside
-the organisation reach an agent. A comparable tool offers an opt-in connector
-that forwards public mentions to the local agent and posts its replies, where
-enabling it is the standing authorisation for autonomous replies. That is a
-prompt-injection surface no egress control addresses.
+Nothing lets text from outside the organisation reach an agent. No relay, no
+bridge from a public account, no mention-handling.
+
+The reason is that such a channel is a prompt-injection surface no egress
+control addresses: whoever can post at the account can put text in front of an
+agent that acts on it.
 
 ## Testing
 
-The product is prose an agent executes and scripts that marshal it, so the
-tests are of two kinds:
+The product is prose an agent executes and scripts that marshal it, so the tests
+are of two kinds:
 
 - **Prose that an agent executes has no gate unless one is written.** Every
   instruction that must reach a worker verbatim is pinned by a test, which is
@@ -209,23 +218,31 @@ tests are of two kinds:
 
 ## Open questions
 
-1. ~~**The watchable pane.**~~ Settled 2026-10-02: the trade is accepted and
-   there is no session backend. See "Dispatch and isolation".
-2. **Which harnesses.** Supporting one well beats seven badly; the choice
+1. **Which harness.** Supporting one well beats several badly; the choice
    determines what prompting mode means in practice.
-3. **How a matter is registered.** A committed list is the obvious shape, but
+2. **How a matter is registered.** A committed list is the obvious shape, but
    whether it holds a clone URL or a path changes what Chambers can do without
    network access.
-4. **Whether the Bench is a capability or a separate run.** Separate state is
+3. **Whether the Bench is a capability or a separate run.** Separate state is
    required; whether that means a distinct process or a distinct context is open.
 
-## What this borrows, credited
+## Provenance
 
-The concept, the worktree-per-task isolation, event-driven supervision, the
-stalled-worker escalation ladder, narrow directory grants, and the pinned and
-checksum-verified installer discipline are all from
-[firstmate](https://github.com/kunchenguid/firstmate) (MIT). This is not a fork.
-That repository is large — count its `*.sh` files rather than trusting a figure
-here, because it is pushed to most days and any number written down goes stale —
-and much of its bulk supports a spread of agent harnesses and terminal backends
-where this needs one of each. A patched fork would be a permanent rebase.
+The concept comes from [firstmate](https://github.com/kunchenguid/firstmate)
+(MIT) — one agent you brief, a crew of agents working in isolation, supervised,
+with the machinery kept below deck. Taken from it directly: worktree-per-task
+isolation, event-driven supervision rather than polling, the stalled-worker
+escalation ladder, narrowly scoped directory grants, and the discipline of
+pinned, checksum-verified, fail-closed installers.
+
+This is not a fork. That repository is large — count its `*.sh` files rather
+than trusting a figure here, because it is pushed to most days and any number
+written down goes stale — and much of its bulk supports a spread of agent
+harnesses and terminal backends where this needs one of each. A patched fork
+would be a permanent rebase.
+
+The departures above are posture rather than disagreement about the concept,
+and they come from auditing that repository for use in this estate: permissions,
+dependency surface, commit attribution, reboot persistence, and inbound
+channels. Each is argued in its own section on its own terms, so this design can
+be read, and disagreed with, by someone who has never seen that project.
