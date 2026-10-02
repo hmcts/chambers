@@ -142,6 +142,18 @@ Each task runs in its own `git worktree`, created from the matter's clone and
 removed on completion. Parallel work on one repository cannot collide, and a
 worker that goes wrong has damaged a disposable directory.
 
+**A task has one of two shapes**, declared when it is raised. A *delivery* task
+changes a matter and ends in something a human reviews. An *inquiry* task
+changes nothing and ends in a report. Conflating them is how an investigation
+quietly edits a repository.
+
+**A delivery task carries its delivery contract**: how the change is meant to
+land, resolved for that task when it is raised. It is never read from a standing
+setting at the moment of dispatch — a default that decides how work lands is a
+decision made by configuration rather than by a person. The brief records the
+contract it was raised under, and a worker whose contract does not match the one
+recorded is refused rather than run.
+
 **Dispatch goes through the harness's own subagent mechanism.** There is no
 terminal multiplexer, so there is no pane to watch a worker in or type into
 mid-task.
@@ -165,11 +177,28 @@ rediscover:
 - **"No output" has two causes** — a worker still working, and a worker that was
   never launched because a concurrency ceiling rejected it rather than queuing
   it. Only the second needs a human, and plan-ordered dispatch hides it.
+- **A dead worker is not a stuck one.** Something stuck might still recover, so
+  escalating it is useful. A worker that is gone never moves again: nothing
+  changes, the idle timer never resets, and the escalation repeats without
+  limit. Unbounded escalation on finished work is what trains a human to stop
+  reading escalations, so a worker proven absent is reported once as gone rather
+  than escalated as stale.
+
+**A wake is not a person.** Supervision wakes the lead agent, and the lead agent
+has to know that a wake is machinery rather than the human speaking. That is
+carried by a structural marker on the input, not inferred from how the text
+reads: prose is the one thing an agent will cheerfully misread, and a tool that
+guesses will eventually treat a watcher's nudge as an instruction.
 
 ## State
 
 All state is files under the Chambers clone, gitignored. No database, no daemon,
 no background service that survives a reboot. A restart reconciles from disk.
+
+Setting a task up is transactional. A failure part-way through removes the
+worktree, the state it wrote and the registry entry it added, because a
+half-created task is worse than none: it reads as work in flight and waits for a
+worker that will never arrive.
 
 If a durable background process is ever needed, it ships with an uninstall path
 in the same change, and the uninstall is tested.
@@ -260,8 +289,12 @@ The concept comes from [firstmate](https://github.com/kunchenguid/firstmate)
 (MIT) — one agent you brief, a crew of agents working in isolation, supervised,
 with the machinery kept below deck. Taken from it directly: worktree-per-task
 isolation, event-driven supervision rather than polling, the stalled-worker
-escalation ladder, narrowly scoped directory grants, and the discipline of
-pinned, checksum-verified, fail-closed installers.
+escalation ladder and the distinction between a stuck worker and an absent one,
+structurally typed operational input so a machine-generated wake is not mistaken
+for a person, the split between tasks that deliver and tasks that report, a
+delivery contract resolved per task rather than inherited from a standing
+setting, transactional setup, narrowly scoped directory grants, and the
+discipline of pinned, checksum-verified, fail-closed installers.
 
 This is not a fork. That repository is large — count its `*.sh` files rather
 than trusting a figure here, because it is pushed to most days and any number
