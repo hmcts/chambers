@@ -59,6 +59,10 @@ the repository couples to every service and grows until nobody can read it.
 - **A replacement for a team.** It supplies capabilities. The accountable
   humans stay accountable, which in a government setting is what makes it
   adoptable at all.
+- **A substitute for users, or for research with them.** It can read what people
+  said and tie a change to the journeys it affects. It cannot generate findings,
+  invent participants or produce personas, and output that resembles research is
+  not research.
 - **An owner of any matter's content.** A service's code, data and findings
   stay with that service. This repository is public, so no estate's repository
   names, field names, counts or live findings belong in it — illustrations use
@@ -73,8 +77,25 @@ A capability is a role, not a person and not a model. It is three files:
 - a **boundary** — the paths it may read and write.
 
 Capabilities are data. Adding one is adding a directory, not changing the
-dispatcher. The first set is deliberately small: implement, review, investigate.
-Anything else waits for a second user.
+dispatcher.
+
+**The scope is a service team, not an engineering team.** A change to a digital
+service needs the journeys it touches identified and the standards it has to
+meet checked, as much as it needs code written, and a tool that only writes code
+hands the rest back to the person it was supposed to help.
+
+The first set is **investigate, research, review, implement**. That is a
+sequencing decision rather than a ceiling: it is what one user needs on day one,
+and the fifth waits for a second user who can say what it is for. A capability
+nobody has asked for is a directory that rots.
+
+**One boundary, and it is not negotiable: a capability analyses research, it
+does not stand in for the people the research is about.** Reading what users
+said, tying a change to the journeys it affects, and checking work against a
+published standard are all analysis of material that exists. Generating
+findings, inventing participants or producing personas is not research, however
+much it resembles the output — and in a government setting, presenting it as
+research would be the most damaging thing this tool could do.
 
 ## The command surface
 
