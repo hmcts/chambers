@@ -23,6 +23,35 @@ A team with every discipline staffed is not the audience.
 **It owns one thing: the layer between an instruction and supervised,
 evidence-backed work on a matter.**
 
+## Why not just use the harness directly
+
+For one change you can hold in your head, you should. Opening a coding agent and
+asking is faster than anything described here, and a tool that insists on itself
+for small work gets abandoned for good reason.
+
+Four things stop that working, and Chambers is for the point where two of them
+are true at once:
+
+1. **More than one thing at a time.** One agent doing four things in one
+   checkout collides with itself: half-finished edits from one task are the
+   starting state of the next, and the failure looks like a bad model rather
+   than a bad setup. Separate worktrees are the fix, and managing them by hand
+   is the tax this removes.
+2. **The disciplines you would not think to ask for.** Asked for a code change
+   you get a code change. Nobody asks which journeys it touches or whether it
+   still meets the Service Standard, because at five o'clock you did not think
+   of it. A capability that exists is asked every time; a discipline you have to
+   remember is asked when you are fresh.
+3. **Review that is not self-review.** Asking the agent that wrote the change to
+   review it returns a review by its author. Separation has to be structural
+   because no instruction survives being read by the thing it constrains.
+4. **Not having to watch.** Direct interaction is a conversation: it stops when
+   you stop reading. Supervision means work continues and you are interrupted
+   when a decision is actually yours.
+
+If fewer than two apply, use the harness directly. That is not a disclaimer, it
+is the boundary of the problem this solves.
+
 ## The shape
 
 Four parts, and the separation between them is the design.
@@ -275,19 +304,35 @@ are of two kinds:
 
 ## Open questions
 
-1. **Which harness.** Supporting one well beats several badly; the choice
-   determines what prompting mode means in practice.
-2. **How a matter is registered.** A committed list is the obvious shape, but
-   whether it holds a clone URL or a path changes what Chambers can do without
-   network access.
+1. ~~**Which harness.**~~ Settled: Claude Code. It is the harness with a
+   configurable permission mode, which is what makes the Permissions section
+   buildable rather than aspirational. A second harness waits for a user who
+   needs one.
+2. ~~**How a matter is registered.**~~ Settled: a committed file naming a path
+   to a clone that already exists on the machine, with the origin URL recorded
+   beside it as context only.
+
+   A path rather than a URL, because Chambers never clones. Cloning needs
+   credentials, and a tool that holds credentials to reach a repository is a
+   larger thing to trust than one that reads a directory a human already chose
+   to have. A clone that exists is also a consent signal: somebody decided this
+   machine should hold that code. Registration then needs no network, and the
+   read-only boundary is enforceable by containment against a resolved path
+   rather than by parsing a URL.
+
+   The origin URL is recorded because pull requests and links need it, and is
+   never the thing anything clones from.
 3. **Whether the Bench is a capability or a separate run.** Separate state is
    required; whether that means a distinct process or a distinct context is open.
 
 ## Provenance
 
-The concept comes from [firstmate](https://github.com/kunchenguid/firstmate)
-(MIT) — one agent you brief, a crew of agents working in isolation, supervised,
-with the machinery kept below deck. Taken from it directly: worktree-per-task
+This is [firstmate](https://github.com/kunchenguid/firstmate)'s design (MIT),
+re-implemented smaller and with a different posture. The concept is theirs and
+so is most of the hard-won mechanism: one agent you brief, a crew working in
+isolation, supervised, with the machinery kept out of the way. Anyone evaluating
+this should read that project first, because it is the proof the shape works and
+this is not. Taken from it directly: worktree-per-task
 isolation, event-driven supervision rather than polling, the stalled-worker
 escalation ladder and the distinction between a stuck worker and an absent one,
 structurally typed operational input so a machine-generated wake is not mistaken
