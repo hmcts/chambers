@@ -330,16 +330,16 @@ are of two kinds:
 This is [firstmate](https://github.com/kunchenguid/firstmate)'s design (MIT),
 re-implemented smaller and with a different posture. The concept is theirs and
 so is most of the hard-won mechanism: one agent you brief, a crew working in
-isolation, supervised, with the machinery kept out of the way. Anyone evaluating
-this should read that project first, because it is the proof the shape works and
-this is not. Taken from it directly: worktree-per-task
-isolation, event-driven supervision rather than polling, the stalled-worker
-escalation ladder and the distinction between a stuck worker and an absent one,
-structurally typed operational input so a machine-generated wake is not mistaken
-for a person, the split between tasks that deliver and tasks that report, a
-delivery contract resolved per task rather than inherited from a standing
-setting, transactional setup, narrowly scoped directory grants, and the
-discipline of pinned, checksum-verified, fail-closed installers.
+isolation, supervised, with the machinery kept out of the way.
+
+Taken from it directly: worktree-per-task isolation, event-driven supervision
+rather than polling, the stalled-worker escalation ladder and the distinction
+between a stuck worker and an absent one, structurally typed operational input
+so a machine-generated wake is not mistaken for a person, the split between
+tasks that deliver and tasks that report, a delivery contract resolved per task
+rather than inherited from a standing setting, transactional setup, narrowly
+scoped directory grants, and the discipline of pinned, checksum-verified, fail-
+closed installers.
 
 This is not a fork. That repository is large — count its `*.sh` files rather
 than trusting a figure here, because it is pushed to most days and any number
